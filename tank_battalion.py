@@ -28,12 +28,14 @@ player_tank_img = cv2.imread("pct/tank_gg.png", cv2.IMREAD_UNCHANGED)
 enemy_tank_img = cv2.imread("pct/tank_enemy.png", cv2.IMREAD_UNCHANGED)
 brick_wall_img = cv2.imread("pct/stena_kirpich.jpg")
 steel_wall_img = cv2.imread("pct/stena_stalnaya.jpg")
+eagle_img = cv2.imread("pct/eagle.png", cv2.IMREAD_UNCHANGED)
 
 for img, name in [(background_image, "tank_fon.jpg"), 
                  (player_tank_img, "tank_gg.png"),
                  (enemy_tank_img, "tank_enemy.png"),
                  (brick_wall_img, "stena_kirpich.jpg"),
-                 (steel_wall_img, "stena_stalnaya.jpg")]:
+                 (steel_wall_img, "stena_stalnaya.jpg"),
+                 (eagle_img, "eagle.png")]:
     if img is None:
         print(f"Ошибка: Не удалось загрузить {name}. Убедитесь, что файл находится в папке pct/")
         exit()
@@ -42,6 +44,7 @@ player_tank_img = cv2.resize(player_tank_img, (tile_size, tile_size), interpolat
 enemy_tank_img = cv2.resize(enemy_tank_img, (tile_size, tile_size), interpolation=cv2.INTER_AREA)
 brick_wall_img = cv2.resize(brick_wall_img, (tile_size, tile_size), interpolation=cv2.INTER_AREA)
 steel_wall_img = cv2.resize(steel_wall_img, (tile_size, tile_size), interpolation=cv2.INTER_AREA)
+eagle_img = cv2.resize(eagle_img, (tile_size, tile_size), interpolation=cv2.INTER_AREA)
 
 class Tank:
     def __init__(self, x, y, color, direction=0, is_player=False):
@@ -153,8 +156,7 @@ def draw_game(frame, player, enemies, level, base_alive, score, lives, current_l
                 temp = (temp * 0.5).astype(np.uint8)
                 game_frame[y*tile_size:(y+1)*tile_size, x*tile_size:(x+1)*tile_size] = temp
             elif level[y][x] == 3 and base_alive:
-                cv2.rectangle(game_frame, (x * tile_size, y * tile_size),
-                            ((x + 1) * tile_size, (y + 1) * tile_size), green, -1)
+                game_frame = overlay_image_alpha(game_frame, eagle_img, x * tile_size, y * tile_size, 0)
 
     if player.alive and (not player.invincible or player.visible):
         game_frame = overlay_image_alpha(game_frame, player_tank_img, player.x, player.y, player.direction)
